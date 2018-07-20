@@ -3,29 +3,36 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/mvsestito/menu-api/api/storage"
 )
 
-// GetItemsHandler handles GET requests to the /restaurant/{restaurantId}/item endpoint
-func GetItemsHandler(w http.ResponseWriter, req *http.Request) {
+// getItemsHandler handles GET requests to the /restaurant/{restaurantId}/item endpoint
+func getItemsHandler(w http.ResponseWriter, req *http.Request) {
 	var (
-		err   error
-		body  []byte
-		items []storage.Item
+		err          error
+		body         []byte
+		items        []storage.Item
+		restaurantID int
 	)
 
 	// parse uri vars
 	vars := mux.Vars(req)
-	restaurantId = vars["resturantId"]
-	if restaurantId == 0 {
-		http.Error(w, "invalid url. restaurantId must be greater than zero", http.StatusBadRequest)
+	if vars["restaurantId"] == "" {
+		http.Error(w, "invalid url. restaurantId must not be empty", http.StatusBadRequest)
 		return
+	} else {
+		restaurantID, err = strconv.Atoi(vars["restaurantId"])
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 
 	// get data
-	items, err = storage.GetAllItems(DB, restaurantId, "")
+	items, err = storage.GetAllItems(DB, restaurantID, "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
