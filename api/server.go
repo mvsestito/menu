@@ -4,23 +4,22 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 var (
-	flagPort     = flag.Int("port", 5000, "Port")
-	flagDBStr    = flag.String("dbstr", "dbname=elacarte sslmode=disable", "DB connection string")
-	flagPoolsize = flag.Int("poolsize", 50, "DB connection pool size")
-	flagDebug    = flag.Bool("debug", false, "Run in debug mode")
+	flagPort       = flag.Int("port", 5000, "Port")
+	flagConfigPath = flag.Bool("config", "config.toml", "Config filepath")
+	flagDebug      = flag.Bool("debug", false, "Run in debug mode")
 )
 
 func init() {
 	flag.Parse()
+	initConfig()
 	initDB()
 }
 

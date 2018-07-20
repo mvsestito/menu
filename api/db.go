@@ -7,7 +7,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var Db *sql.DB
+var DB *sql.DB
 
 func initDB() {
 	var (
@@ -16,18 +16,15 @@ func initDB() {
 	)
 
 	log.Println("Connecting to DB...")
-	Db, err = sql.Open("postgres", *flagDBStr)
+	DB, err = sql.Open("postgres", CONFIG.Dbstr())
 	if err != nil {
-		log.Fatalf("Error opening database connection: %s", err)
+		log.Fatal("Error opening database connection: ", err)
 	}
 
-	err = Db.QueryRow("SELECT 'OK'").Scan(&row)
+	err = DB.QueryRow("SELECT 'OK'").Scan(&row)
 	if err != nil {
-		log.Fatalf("Error connecting to database: %s", err)
+		log.Fatal("Error connecting to database: ", err)
 	}
-
-	Db.SetMaxIdleConns(5)   // limit idle conns
-	Db.SetMaxOpenConns(100) // limit open conns
 
 	log.Println("Connected to DB")
 }

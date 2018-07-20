@@ -25,7 +25,7 @@ func GetItemsHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// get data
-	items, err = storage.GetAllItems(Db, restaurantId, "")
+	items, err = storage.GetAllItems(DB, restaurantId, "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
