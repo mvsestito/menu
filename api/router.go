@@ -4,18 +4,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var router *mux.Router
+var ROUTER *mux.Router
 
 func initRouter() {
-	router = mux.NewRouter()
+	ROUTER = mux.NewRouter()
 
 	// ping routes
-	router.HandleFunc("/ping", pingHandler).Name("ping")
-	router.HandleFunc("/ping/", pingHandler).Name("ping")
-	router.HandleFunc("/ping/db", pingDbHandler).Name("ping-db")
-	router.HandleFunc("/ping/db/", pingDbHandler).Name("ping-db")
+	ROUTER.HandleFunc("/ping", pingHandler).Name("ping")
+	ROUTER.HandleFunc("/ping/", pingHandler).Name("ping")
+	ROUTER.HandleFunc("/ping/db", pingDbHandler).Name("ping-db")
+	ROUTER.HandleFunc("/ping/db/", pingDbHandler).Name("ping-db")
 
 	// GET requests
-	router.Handle("/restaurant/{restaurantId}/item", getItemsHandler).
+	ROUTER.HandleFunc("/restaurant/{restaurantId}/item", getItemsHandler).
 		Methods("GET").Name("get-items")
 }

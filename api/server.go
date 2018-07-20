@@ -13,7 +13,7 @@ import (
 
 var (
 	flagPort       = flag.Int("port", 5000, "Port")
-	flagConfigPath = flag.Bool("config", "config.toml", "Config filepath")
+	flagConfigPath = flag.String("config", "config.toml", "Config filepath")
 	flagDebug      = flag.Bool("debug", false, "Run in debug mode")
 )
 
@@ -30,7 +30,7 @@ func Serve() {
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%v", *flagPort),
-		Handler: Router,
+		Handler: ROUTER,
 	}
 
 	// start server
