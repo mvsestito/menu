@@ -1,6 +1,10 @@
 package storage
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"log"
+)
 
 type Item struct {
 	ID           int
@@ -12,6 +16,80 @@ type Item struct {
 }
 
 func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) {
+	var (
+		err   error
+		rows  *sql.Rows
+		items []Item
+	)
+
+	q := `
+		SELECT i.id, i.restaurant_id, i.name, i.item_type, i.description, i.modifiers
+		FROM items i
+		`
+
+	// protext against sql injection, dont string fmt, use driver built in escaping
+	if restaurantID > 0 && itemType != "" {
+		q += " JOIN restaurants r on i.restaurant_id and r.id = $1 and i.item_type = $2"
+		rows, err = db.Query(q, restaurantID, itemType)
+	} else if restaurantID > 0 {
+		q += " JOIN restaurants r on i.restaurant_id and r.id = $1"
+		rows, err = db.Query(q, restaurantID)
+	} else if itemType != "" {
+		q += " WHERE item_type = $1"
+		rows, err = db.Query(q, itemType)
+	}
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("no items found")
+		} else {
+			log.Println("error querying items: ", err)
+			return nil, err
+		}
+	}
+
+	// store queried modifiers in local cache to avoid dupe db queries
+	modifiersCache := make(map[string][]Item)
+
+	defer rows.Close()
+	for rows.Next() {
+		var (
+			item     Item
+			modTypes []string
+		)
+
+		err := rows.Scan(&item.ID, &item.RestaurantID, &item.Name, &item.ItemType, &item.Desc, &modTypes)
+		if err != nil {
+			log.Println("error scanning items: ", err)
+			return nil, err
+		}
+
+		// get modifiers
+		for _, t := range modTypes {
+			var (
+				modItems []Item
+				ok       bool
+				err      error
+			)
+
+			// check cache first
+			modItems, ok = modifiersCache[t]
+			if !ok { // query db
+				modItems, err = GetAllItems(db, restaurantID, t)
+				if err != nil {
+					log.Printf("error getting modifiers: itemtype: %s, err: %s\n", t, err)
+					return nil, err
+				}
+
+				modifiersCache[t] = modItems
+			}
+
+			for _, mod := range modItems {
+				item.Modifiers = append(item.Modifiers, mod)
+			}
+		}
+	}
+
 	return items, nil
 }
 
