@@ -1,0 +1,12 @@
+package api
+
+import (
+	"net/http"
+)
+
+// SendJSONResp sends an http response to client with a JSON encoded body
+func SendJSONResp(w http.ResponseWriter, data []byte, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(data)
+}
