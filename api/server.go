@@ -21,6 +21,7 @@ func init() {
 	flag.Parse()
 	initConfig()
 	initDB()
+	initRouter()
 }
 
 func Serve() {
