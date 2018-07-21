@@ -13,11 +13,11 @@ import (
 
 var (
 	flagPort       = flag.Int("port", 5000, "Port")
-	flagConfigPath = flag.String("config", "config.toml", "Config filepath")
+	flagConfigPath = flag.String("config", "../config.toml", "Config filepath")
 	flagDebug      = flag.Bool("debug", false, "Run in debug mode")
 )
 
-func init() {
+func _init() {
 	flag.Parse()
 	initConfig()
 	initDB()
@@ -25,6 +25,9 @@ func init() {
 }
 
 func Serve() {
+	// explicitly init
+	_init()
+
 	// subscribe to SIGINT signals
 	stopChan := make(chan os.Signal)
 	signal.Notify(stopChan, os.Interrupt)
