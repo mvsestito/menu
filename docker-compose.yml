@@ -1,0 +1,11 @@
+version: '3'
+services:
+    db:
+      image: postgres
+    web:
+        build: .
+        command: /bin/bash -c "/go/bin/add_mock_items; /go/bin/menu-api -config /go/src/github.com/mvsestito/menu-api/config.toml"
+        ports:
+          - "5000:5000"
+        depends-on:
+          - db
