@@ -25,18 +25,15 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 	q := `
 		SELECT i.id, i.restaurant_id, i.name, i.item_type, i.description, i.modifiers
 		FROM items i
+		JOIN restaurants r on i.restaurant_id = r.id AND r.id = $1
 		`
 
 	// protext against sql injection, dont string fmt, use driver built in escaping
-	if restaurantID > 0 && itemType != "" {
-		q += " JOIN restaurants r on i.restaurant_id and r.id = $1 and i.item_type = $2"
+	if itemType != "" {
+		q += " WHERE item_type = $2"
 		rows, err = db.Query(q, restaurantID, itemType)
-	} else if restaurantID > 0 {
-		q += " JOIN restaurants r on i.restaurant_id and r.id = $1"
+	} else {
 		rows, err = db.Query(q, restaurantID)
-	} else if itemType != "" {
-		q += " WHERE item_type = $1"
-		rows, err = db.Query(q, itemType)
 	}
 
 	if err != nil {
