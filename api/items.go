@@ -21,7 +21,7 @@ func getItemsHandler(w http.ResponseWriter, req *http.Request) {
 	// parse uri vars
 	vars := mux.Vars(req)
 	if vars["restaurantId"] == "" {
-		http.Error(w, "invalid url. restaurantId must not be empty", http.StatusBadRequest)
+		http.Error(w, "invalid url. restaurantId cannot be empty", http.StatusBadRequest)
 		return
 	} else {
 		restaurantID, err = strconv.Atoi(vars["restaurantId"])
