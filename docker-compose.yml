@@ -8,6 +8,13 @@ services:
       environment:
         - POSTGRES_USER=postgres
         - POSTGRES_DB=test
+    test:
+      build: .
+      command: /bin/bash -c "../wait-for-it/wait-for-it.sh db:5432 -t 10
+                            && psql -h db -d test -U postgres < /go/src/github.com/mvsestito/menu-api/db/schema.sql
+                            && go list -f '{{if len .TestGoFiles}}\"go test -v {{.ImportPath}}\"{{end}}' ./... | xargs -L 1 -t sh -c"
+      depends_on:
+        - postgres
     web:
       build: .
       image: menuapi
