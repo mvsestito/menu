@@ -15,6 +15,7 @@ type DBConfig struct {
 	Port     int    `toml:"port"`
 	User     string `toml:"user"`
 	Password string `toml:"password"`
+	SSLMode  string `toml:"sslmode"`
 }
 
 type Config struct {
@@ -23,8 +24,8 @@ type Config struct {
 
 // Dhstr returns a Postgresql formatted database string
 func (c *Config) Dbstr() string {
-	return fmt.Sprintf("host=%s dbname=%s user=%s password=%s port=%d",
-		c.Db.Host, c.Db.Dbname, c.Db.User, c.Db.Password, c.Db.Port)
+	return fmt.Sprintf("host=%s dbname=%s user=%s password=%s port=%d sslmode=%s",
+		c.Db.Host, c.Db.Dbname, c.Db.User, c.Db.Password, c.Db.Port, c.Db.SSLMode)
 }
 
 // initConfig reads a TOML config file into global CONFIG object
