@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+
+	"github.com/lib/pq"
 )
 
 type Item struct {
@@ -28,7 +30,7 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 		JOIN restaurants r on i.restaurant_id = r.id AND r.id = $1
 		`
 
-	// protext against sql injection, dont string fmt, use driver built in escaping
+	// protect against sql injection, dont string fmt, use driver built in escaping
 	if itemType != "" {
 		q += " WHERE item_type = $2"
 		rows, err = db.Query(q, restaurantID, itemType)
@@ -55,7 +57,7 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 			modTypes []string
 		)
 
-		err := rows.Scan(&item.ID, &item.RestaurantID, &item.Name, &item.ItemType, &item.Desc, &modTypes)
+		err := rows.Scan(&item.ID, &item.RestaurantID, &item.Name, &item.ItemType, &item.Desc, pq.Array(&modTypes))
 		if err != nil {
 			log.Println("error scanning items: ", err)
 			return nil, err
@@ -85,6 +87,8 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 				item.Modifiers = append(item.Modifiers, mod)
 			}
 		}
+
+		items = append(items, item)
 	}
 
 	return items, nil
