@@ -1,6 +1,7 @@
 [database]
-host="localhost"
-dbname="template1"
+host="db"
+dbname="test"
 port=5432
 user="postgres"
-password="example"
+password=""
+sslmode="disable"
