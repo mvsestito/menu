@@ -13,7 +13,7 @@ import (
 
 var (
 	flagPort       = flag.Int("port", 5000, "Port")
-	flagConfigPath = flag.String("config", "../config.toml", "Config filepath")
+	flagConfigPath = flag.String("config", "/go/src/mvsestito/menu-api/config.toml", "Config filepath")
 	flagDebug      = flag.Bool("debug", false, "Run in debug mode")
 )
 
