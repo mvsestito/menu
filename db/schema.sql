@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS items (
     name TEXT NOT NULL,
     item_type TEXT NOT NULL,
     description TEXT,
-    modifiers TEXT[]
+    modifiers TEXT[],
     created_ts TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_ts TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     UNIQUE(restaurant_id, name, item_type)
