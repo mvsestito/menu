@@ -12,22 +12,16 @@ import (
 )
 
 var (
-	flagPort       = flag.Int("port", 5000, "Port")
-	flagConfigPath = flag.String("config", "/go/src/mvsestito/menu-api/config.toml", "Config filepath")
-	flagDebug      = flag.Bool("debug", false, "Run in debug mode")
+	flagPort  = flag.Int("port", 5000, "Port")
+	flagDebug = flag.Bool("debug", false, "Run in debug mode")
 )
 
-func _init() {
+func init() {
 	flag.Parse()
-	initConfig()
-	initDB()
 	initRouter()
 }
 
 func Serve() {
-	// explicitly init
-	_init()
-
 	// subscribe to SIGINT signals
 	stopChan := make(chan os.Signal)
 	signal.Notify(stopChan, os.Interrupt)

@@ -15,10 +15,9 @@ import (
 
 func TestGetItemsHandler(t *testing.T) {
 	assert := assert.New(t)
-	DB = mock.MockDB()
-	mock.ResetTables(DB)
-	mock.AddMockRestaurants(DB)
-	mock.AddMockItems(DB)
+	mock.ResetTables(storage.DB)
+	mock.AddMockRestaurants(storage.DB)
+	mock.AddMockItems(storage.DB)
 
 	// restaurant 1
 	endpoint := "/restaurant/{restaurantId}/item"

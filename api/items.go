@@ -25,14 +25,14 @@ func getItemsHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	} else {
 		restaurantID, err = strconv.Atoi(vars["restaurantId"])
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		if err != nil || restaurantID == 0 {
+			http.Error(w, "must specify a nonzero integer for field 'restaurantId'", http.StatusBadRequest)
 			return
 		}
 	}
 
 	// get data
-	items, err = storage.GetAllItems(DB, restaurantID, "")
+	items, err = storage.GetAllItems(restaurantID, "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
