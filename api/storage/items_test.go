@@ -12,12 +12,11 @@ import (
 func TestGetAllItems(t *testing.T) {
 	assert := assert.New(t)
 
-	db := mock.MockDB()
-	mock.ResetTables(db)
-	mock.AddMockRestaurants(db)
+	mock.ResetTables(DB)
+	mock.AddMockRestaurants(DB)
 
 	// should be empty
-	items, err := GetAllItems(db, 1, "")
+	items, err := GetAllItems(1, "")
 	assert.Nil(err)
 	if err != nil {
 		return
@@ -25,10 +24,10 @@ func TestGetAllItems(t *testing.T) {
 	assert.Equal(0, len(items))
 
 	// add items
-	mock.AddMockItems(db)
+	mock.AddMockItems(DB)
 
 	// get all for restaurant 1
-	items, err = GetAllItems(db, 1, "")
+	items, err = GetAllItems(1, "")
 	assert.Nil(err)
 	if err != nil {
 		return
@@ -36,7 +35,7 @@ func TestGetAllItems(t *testing.T) {
 	assert.Equal(6, len(items))
 
 	// get rest 2
-	items, err = GetAllItems(db, 2, "")
+	items, err = GetAllItems(2, "")
 	assert.Nil(err)
 	if err != nil {
 		return
@@ -44,7 +43,7 @@ func TestGetAllItems(t *testing.T) {
 	assert.Equal(4, len(items))
 
 	// get only sides
-	items, err = GetAllItems(db, 1, "side")
+	items, err = GetAllItems(1, "side")
 	assert.Nil(err)
 	if err != nil {
 		return

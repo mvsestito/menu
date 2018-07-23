@@ -1,0 +1,15 @@
+[prod]
+host="db"
+dbname="test"
+port=5432
+user="postgres"
+password=""
+sslmode="disable"
+[dev]
+host="localhost"
+dbname="test"
+port=5432
+user="postgres"
+password=""
+sslmode="disable"
+

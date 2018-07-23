@@ -4,20 +4,28 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/lib/pq"
 )
 
+var (
+	// on any state changing exec against db cache should be flushed
+	// ensure data consistency
+	modifiersCache             = make(map[string][]Item)
+	cacheLock      *sync.Mutex = &sync.Mutex{}
+)
+
 type Item struct {
-	ID           int
-	RestaurantID int
-	Name         string
-	ItemType     string
-	Desc         string
-	Modifiers    []Item
+	ID           int    `json:"id"`
+	RestaurantID int    `json:"restaurant_id"`
+	Name         string `json:"name"`
+	ItemType     string `json:"item_type"`
+	Desc         string `json:"description"`
+	Modifiers    []Item `json:"modifiers"`
 }
 
-func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) {
+func GetAllItems(restaurantID int, itemType string) ([]Item, error) {
 	var (
 		err   error
 		rows  *sql.Rows
@@ -33,9 +41,9 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 	// protect against sql injection, dont string fmt, use driver built in escaping
 	if itemType != "" {
 		q += " WHERE item_type = $2"
-		rows, err = db.Query(q, restaurantID, itemType)
+		rows, err = DB.Query(q, restaurantID, itemType)
 	} else {
-		rows, err = db.Query(q, restaurantID)
+		rows, err = DB.Query(q, restaurantID)
 	}
 
 	if err != nil {
@@ -46,9 +54,6 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 			return nil, err
 		}
 	}
-
-	// store queried modifiers in local cache to avoid dupe db queries
-	modifiersCache := make(map[string][]Item)
 
 	defer rows.Close()
 	for rows.Next() {
@@ -65,22 +70,22 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 
 		// get modifiers
 		for _, t := range modTypes {
-			var (
-				modItems []Item
-				ok       bool
-				err      error
-			)
+			var err error
 
 			// check cache first
-			modItems, ok = modifiersCache[t]
+			cacheLock.Lock()
+			modItems, ok := modifiersCache[t]
+			cacheLock.Unlock()
 			if !ok { // query db
-				modItems, err = GetAllItems(db, restaurantID, t)
+				modItems, err = GetAllItems(restaurantID, t)
 				if err != nil {
 					log.Printf("error getting modifiers: itemtype: %s, err: %s\n", t, err)
 					return nil, err
 				}
 
+				cacheLock.Lock()
 				modifiersCache[t] = modItems
+				cacheLock.Unlock()
 			}
 
 			for _, mod := range modItems {
@@ -94,5 +99,5 @@ func GetAllItems(db *sql.DB, restaurantID int, itemType string) ([]Item, error) 
 	return items, nil
 }
 
-//func GetItem(db *sql.DB, restaurantID int, itemName string) (Item, error) {
+//func GetItem(restaurantID int, itemName string) (Item, error) {
 //}
