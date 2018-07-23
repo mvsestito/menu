@@ -4,25 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os/exec"
 )
-
-func MockDB() *sql.DB {
-	dbstr := "host=%s dbname=test port=5432 user=postgres sslmode=disable"
-	cmd := exec.Command("uname")
-	if stdout, _ := cmd.Output(); string(stdout[:len(stdout)-1]) == "Darwin" { // running on local mac
-		dbstr = fmt.Sprintf(dbstr, "localhost")
-	} else { // inside docker bridge network container
-		dbstr = fmt.Sprintf(dbstr, "db")
-	}
-
-	db, err := sql.Open("postgres", dbstr)
-	if err != nil {
-		log.Fatal("error opening database connection: ", err)
-	}
-
-	return db
-}
 
 // ResetTables truncates all tables in test db
 func ResetTables(db *sql.DB) {
