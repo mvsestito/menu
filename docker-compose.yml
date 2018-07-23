@@ -12,6 +12,7 @@ services:
       build: .
       command: /bin/bash -c "../wait-for-it/wait-for-it.sh db:5432 -t 10
                             && psql -h db -d test -U postgres < /go/src/github.com/mvsestito/menu-api/db/schema.sql
+                            && export DBCONFIGPATH=/go/src/github.com/mvsestito/menu-api/db_config.toml
                             && go list -f '{{if len .TestGoFiles}}\"go test -v {{.ImportPath}}\"{{end}}' ./... | xargs -L 1 -t sh -c"
       depends_on:
         - postgres
@@ -20,8 +21,9 @@ services:
       image: menuapi
       command: /bin/bash -c "../wait-for-it/wait-for-it.sh db:5432 -t 10
                             && psql -h db -d test -U postgres < /go/src/github.com/mvsestito/menu-api/db/schema.sql
+                            && export DBCONFIGPATH=/go/src/github.com/mvsestito/menu-api/db_config.toml
                             && /go/bin/mock-driver
-                            && /go/bin/menu-api -config /go/src/github.com/mvsestito/menu-api/config.toml"
+                            && /go/bin/menu-api"
       ports:
         - "5000:5000"
       depends_on:
