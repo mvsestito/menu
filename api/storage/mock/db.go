@@ -36,7 +36,7 @@ func AddMockItems(db *sql.DB) {
 	var err error
 
 	// add toppings
-	q := `INSERT INTO items (id, restaurant_id, name, item_type, description) VALUES
+	q := `INSERT INTO items (id, restaurant_id, name, kind, description) VALUES
 			(1, 1, 'cheese', 'topping', 'cheddar cheese'),
 			(2, 1, 'ketchup', 'topping', 'regular ketchup'),
 			(3, 2, 'mustard', 'topping', 'romaine lettuce'),
@@ -48,7 +48,7 @@ func AddMockItems(db *sql.DB) {
 	}
 
 	// add sides
-	q = `INSERT INTO items (id, restaurant_id, name, item_type, description, modifiers) VALUES
+	q = `INSERT INTO items (id, restaurant_id, name, kind, description, modifiers) VALUES
 			(5, 1, 'french fries', 'side', 'fried potatoes', '{topping}'),
 			(6, 1, 'salad', 'side', 'house salad', '{topping}'),
 			(7, 2, 'biscuit', 'side', 'fluffy wheat bread', '{topping}')`
@@ -59,7 +59,7 @@ func AddMockItems(db *sql.DB) {
 	}
 
 	// add entrees
-	q = `INSERT INTO items (id, restaurant_id, name, item_type, description, modifiers) VALUES
+	q = `INSERT INTO items (id, restaurant_id, name, kind, description, modifiers) VALUES
 			(8, 1, 'hamburger', 'entree', 'beef patty with wheat bun', '{topping, side}'),
 			(9, 1, 'fried chicken', 'entree', 'chicken battered and fried', '{topping, side}'),
 			(10, 2, 'salmon', 'entree', 'atlantic salmon', '{topping, side}')`

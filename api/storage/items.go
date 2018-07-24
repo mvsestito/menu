@@ -20,7 +20,7 @@ type Item struct {
 	ID           int    `json:"id"`
 	RestaurantID int    `json:"restaurant_id"`
 	Name         string `json:"name"`
-	ItemType     string `json:"item_type"`
+	Kind     string `json:"kind"`
 	Desc         string `json:"description"`
 	Modifiers    []Item `json:"modifiers"`
 }
@@ -33,14 +33,14 @@ func GetAllItems(restaurantID int, itemType string) ([]Item, error) {
 	)
 
 	q := `
-		SELECT i.id, i.restaurant_id, i.name, i.item_type, i.description, i.modifiers
+		SELECT i.id, i.restaurant_id, i.name, i.kind, i.description, i.modifiers
 		FROM items i
 		JOIN restaurants r on i.restaurant_id = r.id AND r.id = $1
 		`
 
 	// protect against sql injection, dont string fmt, use driver built in escaping
 	if itemType != "" {
-		q += " WHERE item_type = $2"
+		q += " WHERE kind = $2"
 		rows, err = DB.Query(q, restaurantID, itemType)
 	} else {
 		rows, err = DB.Query(q, restaurantID)
@@ -62,7 +62,7 @@ func GetAllItems(restaurantID int, itemType string) ([]Item, error) {
 			modTypes []string
 		)
 
-		err := rows.Scan(&item.ID, &item.RestaurantID, &item.Name, &item.ItemType, &item.Desc, pq.Array(&modTypes))
+		err := rows.Scan(&item.ID, &item.RestaurantID, &item.Name, &item.Kind, &item.Desc, pq.Array(&modTypes))
 		if err != nil {
 			log.Println("error scanning items: ", err)
 			return nil, err

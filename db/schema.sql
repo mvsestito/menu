@@ -29,12 +29,12 @@ CREATE TABLE IF NOT EXISTS items (
     id SERIAL PRIMARY KEY,
     restaurant_id int4 NOT NULL REFERENCES restaurants (id) ON DELETE CASCADE,
     name TEXT NOT NULL,
-    item_type TEXT NOT NULL,
+    kind TEXT NOT NULL,
     description TEXT,
     modifiers TEXT[],
     created_ts TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_ts TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    UNIQUE(restaurant_id, name, item_type)
+    UNIQUE(restaurant_id, name, kind)
     );
 
 DROP TRIGGER IF EXISTS update_items_updated_ts ON items;
